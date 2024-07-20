@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Neural Network For Contrased Color Pick</title>
+    <script defer type="module">
+        import { NeuralNetwork } from 'https://cdn.jsdelivr.net/npm/mikir@1.0.2/dist/index.js'
+
+        const inputEl = document.getElementById('input')
+        const submitEl = document.getElementById('submit')
+
+        const data = [{"input":[0,0,0],"output":[1]},{"input":[1,1,1],"output":[0]},{"input":[0.4714868739616287,0.6968096537839286,0.4877786292020765],"output":[1]},{"input":[0.6822365969901012,0.9054521572322671,0.7173579925590292],"output":[0]},{"input":[0.8565430097100701,0.37995660940625475,0.2515953753215987],"output":[1]},{"input":[0.8347876018831961,0.6851315771794808,0.4908788239016162],"output":[1]},{"input":[0.8380105515411815,0.9677551223784995,0.9462226419757775],"output":[0]},{"input":[0.8479001356946607,0.8154019096589753,0.8181501444261916],"output":[0]},{"input":[0.8930619830858955,0.5437731439475455,0.9826499913574935],"output":[0]}]
+
+
+        submitEl.addEventListener('click', () => {
+            try {
+                const d = JSON.parse(inputEl.value)
+                data.push(d)
+                inputEl.value = ''
+                train()
+            } catch (e) {
+                console.error(e)
+            }
+        })
+
+        const nn = new NeuralNetwork(3, 3, 1)
+
+        function train() {
+            for (let i = 0; i < 10000; i++) {
+                data.forEach(d => {
+                    nn.train(d.input, d.output)
+                })
+            }
+        }
+
+        let color
+
+        function setRandomColor() {
+          // it is good practice to normalize the input data with a range between 0 and 1 instead of 0 and 255
+          color = [Math.random(), Math.random(), Math.random()]
+          const guess = nn.predict(color)
+          guessEl.style.color = guess > .5 ? '#FFF' : '#000'
+          colorEl.style.backgroundColor = 
+            `rgba(${color[0] * 255}, ${color[1] * 255}, ${color[2] * 255})`
+        }
+
+        function chooseColor(v) {
+            data.push({ input: Object.values(color), output: [v] })
+            nn.train(color, [v])
+            setRandomColor()
+        }
+
+        function printData() {
+            console.log(JSON.stringify(data))
+        }
+
+        const colorEl = document.getElementById('color')
+        const guessEl = document.getElementById('guess')
+        const whiteButton = document.getElementById('white-button')
+        const blackButton = document.getElementById('black-button')
+        const printButton = document.getElementById('print-button')
+        const inspectNetwork = document.getElementById('inspect-network')
+
+        train()
+        setRandomColor()
+        whiteButton.addEventListener('click', () => chooseColor(1))
+        blackButton.addEventListener('click', () => chooseColor(0))
+        printButton.addEventListener('click', printData)
+        inspectNetwork.addEventListener('click', () => console.log(nn))
+    </script>
+</head>
+<body>
+     <style>
+    input {
+        display: block;
+    }
+    #color {
+      width: 200px;
+      height: 200px;
+      border: 5px solid black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .white {
+      color: white;
+    }
+  </style>
+
+  <input type="text" id="input" placeholder="feed me... (use stringify json data!)" />
+  <button id="submit">Submit</button>
+
+  <div id="color">
+    <div class="white">White Text</div>
+    <div>Black Text</div>
+    <div id="guess">Guess Text</div>
+  </div>
+
+  <button id="white-button">White</button>
+  <button id="black-button">Black</button>
+  <button id="print-button">Print</button>
+  <button id="inspect-network">Inspect</button>
+</body>
+</html>
