@@ -4,6 +4,8 @@ Simple and fast neural network framework for JavaSript
 
 **Fun fact: "mikir" is Indonesian word that mean think/thinking**
 
+[Learn machine learning fundamentals and take mikir code walkthrough](https://farrelnikoson.tech/blog/machine-learning-fundamentals)
+
 ## Installation
 
 To install the package, use npm:
